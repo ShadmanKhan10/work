@@ -1,7 +1,12 @@
 import React from "react";
+import SignUp from "./Components/SignUp";
 
 function App() {
-  return <></>;
+  return (
+    <>
+      <SignUp />
+    </>
+  );
 }
 
 export default App;
