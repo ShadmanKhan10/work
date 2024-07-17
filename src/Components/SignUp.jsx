@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./SignUp.css";
 
@@ -10,6 +10,22 @@ export default function SignUp() {
   const [standard, setStandard] = useState("");
   const [students, setStudents] = useState([]);
 
+  useEffect(() => {
+    fetchStudents();
+  }, []);
+
+  const fetchStudents = async () => {
+    try {
+      const response = await axios.get(
+        "http://192.168.1.13:8000/api/v1/users/getusers"
+      );
+      console.log(response.data.data);
+      setStudents(response.data.data);
+    } catch (error) {
+      console.error("Error fetching students:", error);
+    }
+  };
+
   const openPopUp = () => {
     setpopUp(true);
   };
@@ -18,12 +34,6 @@ export default function SignUp() {
     setpopUp(false);
     clearFields();
   };
-
-  //   const handleSave = () => {
-  //     const newStudent = { id: Date.now(), name, email, rollNo, standard };
-  //     setStudents([...students, newStudent]);
-  //     closepopUp();
-  //   };
 
   const handleSave = async () => {
     const newStudent = { name, email, rollNo, standard };
@@ -50,7 +60,9 @@ export default function SignUp() {
   return (
     <div>
       <h1>Student Info</h1>
-      <button onClick={openPopUp}>Add Info</button>
+      <button className="main-btn" onClick={openPopUp}>
+        Add Info
+      </button>
 
       {popUp && (
         <div className="popUp">
@@ -99,16 +111,36 @@ export default function SignUp() {
         </div>
       )}
 
-      <div>
-        {students.map((student) => (
-          <div key={student.rollNo}>
-            <p>Name: {student.name}</p>
-            <p>Email: {student.email}</p>
-            <p>Roll Number: {student.rollNo}</p>
-            <p>Class: {student.standard}</p>
-          </div>
-        ))}
-      </div>
+      <table className="student-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Roll Number</th>
+            <th>Class</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {students.map((student) => (
+            <tr key={student.rollNo}>
+              <td>{student.name}</td>
+              <td>{student.email}</td>
+              <td>{student.rollNo}</td>
+              <td>{student.standard}</td>
+              <td>
+                <button className="edit" onClick={openPopUp}>
+                  Edit
+                </button>
+              </td>
+              <td>
+                <button className="cancel">Delete</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
